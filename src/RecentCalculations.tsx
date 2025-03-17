@@ -59,25 +59,35 @@ const renderCalculationSummary = (calculation: Calculation) => {
           </p>
         </>
       );
-
     case 'multi-goal':
-      // Show count of goals
-      const goalCount = Array.isArray(results) ? results.length : 1;
-      return (
-        <>
-          <p className="mb-0">
-            <strong>
-              {goalCount} goal{goalCount !== 1 ? 's' : ''}
-            </strong>
-          </p>
-          {Array.isArray(results) && results.length > 0 && (
+      if (Array.isArray(results)) {
+        return (
+          <>
             <p className="mb-0">
-              <strong>First goal:</strong>{' '}
-              {formatCurrency(results[0].monthlyContribution)}/month
+              <strong>
+                {results.length} goal{results.length !== 1 ? 's' : ''}
+              </strong>
             </p>
-          )}
-        </>
-      );
+            {results.map((goal, index) => (
+              <div key={goal.id} className="mt-2">
+                <p className="mb-0">
+                  <strong>
+                    Goal {index + 1} ({goal.type}):
+                  </strong>
+                </p>
+                <p className="mb-0">
+                  Target: {formatCurrency(goal.totalSavings)}
+                </p>
+                <p className="mb-0">
+                  Monthly: {formatCurrency(goal.monthlyContribution)}
+                </p>
+              </div>
+            ))}
+          </>
+        );
+      } else {
+        return <p>No goals available</p>;
+      }
 
     default:
       return <p>Calculation details</p>;
@@ -112,10 +122,10 @@ const RecentCalculations: React.FC = () => {
       </Card.Header>
       <ListGroup variant="flush">
         {recentCalculations.map((calc) => (
-          <ListGroup.Item key={calc.id}>
+          <ListGroup.Item key={calc.id} className="py-3">
             <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <h6 className="mb-1">
+              <div className="w-100">
+                <h6 className="mb-2">
                   {getCalculatorName(calc.calculatorType)}{' '}
                   <Badge bg="secondary" className="ms-2">
                     {formatDate(calc.timestamp)}
